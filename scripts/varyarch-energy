@@ -1,0 +1,30 @@
+#!/bin/bash
+
+run () {
+  local ruu_size=$1
+
+  export SSFLAGS="-ruu:size $ruu_size"
+  local stdout=$(./run-wattch 2>&1 | ./scripts/tabulate)
+  echo "ruu_size,$(printf "%04d" $ruu_size),$stdout"
+}
+
+for ruu_size in 2 4 8 16 32 64 128 256
+do
+  run "$ruu_size" &
+done
+
+wait
+
+# cal120@texel33:SplayTrees$ time ./scripts/varyarch-energy
+# ruu_size,0002,,sim_IPC,0.5173,sim_exec_BW,0.5239,ruu_full,0.9602,lsq_full,0.0000,avg_sim_slip,6.6910,dl1.miss_rate,0.0001,ul2.miss_rate,0.1888,total_power_cycle_cc1,1031971444.5013
+# ruu_size,0004,,sim_IPC,0.8494,sim_exec_BW,0.8747,ruu_full,0.9254,lsq_full,0.0000,avg_sim_slip,7.3995,dl1.miss_rate,0.0001,ul2.miss_rate,0.1888,total_power_cycle_cc1,768561902.5089
+# ruu_size,0008,,sim_IPC,1.2066,sim_exec_BW,1.2928,ruu_full,0.8473,lsq_full,0.0064,avg_sim_slip,9.0346,dl1.miss_rate,0.0001,ul2.miss_rate,0.1887,total_power_cycle_cc1,628137338.8342
+# ruu_size,0016,,sim_IPC,1.3065,sim_exec_BW,1.4914,ruu_full,0.3799,lsq_full,0.1830,avg_sim_slip,12.7334,dl1.miss_rate,0.0001,ul2.miss_rate,0.1884,total_power_cycle_cc1,616824738.0862
+# ruu_size,0032,,sim_IPC,1.3089,sim_exec_BW,1.4986,ruu_full,0.0396,lsq_full,0.4466,avg_sim_slip,16.5665,dl1.miss_rate,0.0001,ul2.miss_rate,0.1884,total_power_cycle_cc1,697198133.1573
+# ruu_size,0064,,sim_IPC,1.3090,sim_exec_BW,1.4986,ruu_full,0.0000,lsq_full,0.4862,avg_sim_slip,16.6585,dl1.miss_rate,0.0001,ul2.miss_rate,0.1880,total_power_cycle_cc1,780784781.6026
+# ruu_size,0128,,sim_IPC,1.3090,sim_exec_BW,1.4986,ruu_full,0.0000,lsq_full,0.4862,avg_sim_slip,16.6586,dl1.miss_rate,0.0001,ul2.miss_rate,0.1881,total_power_cycle_cc1,918341953.2589
+# ruu_size,0256,,sim_IPC,1.3089,sim_exec_BW,1.4986,ruu_full,0.0000,lsq_full,0.4862,avg_sim_slip,16.6587,dl1.miss_rate,0.0001,ul2.miss_rate,0.1881,total_power_cycle_cc1,1185736113.9052
+
+# real    0m52.447s
+# user    5m53.118s
+# sys     0m3.793s
