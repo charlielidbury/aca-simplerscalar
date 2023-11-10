@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1699566373 "/homes/cal120/Documents/repos/aca-simplerscalar/report/main.tex" "main.pdf" "main" 1699566374
+["pdflatex"] 1699614980 "/homes/cal120/Documents/repos/aca-simplerscalar/report/main.tex" "main.pdf" "main" 1699614981
   "/etc/texmf/web2c/texmf.cnf" 1664552148 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/homes/cal120/Documents/repos/aca-simplerscalar/report/main.tex" 1699566246 6409 266e88754fc1c3bb8711abdc0af573ce ""
+  "/homes/cal120/Documents/repos/aca-simplerscalar/report/main.tex" 1699614975 9251 c798c2364522f2c4f551718c34ff9500 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
@@ -43,11 +43,14 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1664552544 4078076 dfd917b731fa0a2f1d31d806eb393949 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1685630299 2012263 3593d80344872db2ed1ed2d8b313195f ""
-  "assets/energy_vs_ruu_and_lsq_size.png" 1699566368 46768 8ff8b4579fb080b6bdb14c75e1f91666 ""
-  "assets/ipc_vs_ruu_size.png" 1699566357 40729 4c5e52d63e2b00bbce12291a3cc52610 ""
-  "assets/ruu_and_lsq_vs_sim_time.png" 1699566372 42605 c8109f41f7e6ffa6acee4cb0ac2c84bf ""
-  "main.aux" 1699566374 1846 41bbd93de60b7c7050dfcea96d94f9e7 "pdflatex"
-  "main.tex" 1699566246 6409 266e88754fc1c3bb8711abdc0af573ce ""
+  "assets/energy_vs_ruu_and_lsq_size.png" 1699609929 47791 cdf3d81829541c29eb4c563049c99ff5 ""
+  "assets/ipc_vs_ruu_size.png" 1699609926 40173 1ca6a6163a93c36d12d9306c951943da ""
+  "assets/l1bsize_vs_energy.png" 1699609938 22594 7fed37820ca85b3e0bc5bd83e0bce814 ""
+  "assets/l1csize_vs_energy.png" 1699609940 28782 6232065c9ffbcb33785a55a6ee04daf1 ""
+  "assets/ruu_and_lsq_vs_sim_time.png" 1699609937 43005 79d39999fb9a38939b81966c208fae97 ""
+  "assets/units_vs_energy.png" 1699609949 36634 92d30cd43acfb5507b629fbad48d0ddf ""
+  "main.aux" 1699614981 2951 b747256396dc495c53e55277af712e88 "pdflatex"
+  "main.tex" 1699614975 9251 c798c2364522f2c4f551718c34ff9500 ""
   (generated)
   "main.aux"
   "main.log"

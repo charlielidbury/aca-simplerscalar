@@ -15,7 +15,7 @@
   \section{Intro}
   There is a known set of controls we have over the microarchitecture of the SimpleScalar CPU, and we have the source code of the program being run.
 
-  \section{Initial Exercises}
+  \section{Studying Microarchitectural Effects}
   At the start of the specification, there are a few direct questions, this section answers those.
 
   \begin{figure}[H]
@@ -61,7 +61,7 @@
   At the default parameters (RUU=16, LSQ=8) the LSQ seems to be the bottleneck because increasing the RUU past its default value of 16 doesn't increase performance. This is likely because the program has a lot of loads and stores, creating lots of entries in the LSQ.
 
   \subsection{Race-to-Finish Doesn't Always Win}
-  As show in Figure \ref{fig:energy_vs_ruu_lsq}, the RUU/LSQ configuration with the lowest energy usage in RUU=16, LSQ=16, Figure \ref{fig:ruu_or_lsq_bottleneck} shows it is \textit{at least} RUU=128, LSQ=64. Although there are diminishing returns, it looks like increasing the RUU and LSQ size always results in faster runtime.
+  As shown in Figure \ref{fig:energy_vs_ruu_lsq}, the RUU/LSQ configuration with the lowest energy usage in RUU=16, LSQ=16, Figure \ref{fig:ruu_or_lsq_bottleneck} shows it is \textit{at least} RUU=128, LSQ=64. Although there are diminishing returns, it looks like increasing the RUU and LSQ size always results in faster runtime.
 
   \section{Program Analysis}
   In this section, I will discuss the various microarchitecture parameters we can adjust, and how they will likely affect the execution of the given splay tree program.
@@ -69,6 +69,7 @@
   Splaytest inserts many elements into a splay tree, then reads many elements, as a random walk. Because it's a random walk, elements that have previously been accessed are very likely to be accessed again. The design of splay trees means many of these operations will be very fast, as the accessed key will have recently been \textit{splayed} over to the root.
 
   \subsection{Cache}
+  \label{analysis:cache}
   The simulator allows us to adjust everything about the L1 and L2 cache (sets, block size, associativity, replacement strategy), as well as how many levels are unified between instructions and data.
 
   Looking at the splay tree code, it looks like each node is a struct with 4 8-byte fields, which probably means a cache block size of 32 bytes is optimal.
@@ -91,6 +92,53 @@
   We can alter how many instructions are decoded/issued/committed per cycle, which will affect the IPC, as well as the pressure placed on the other units. For instance, issuing lots of instructions per cycle means we can better utilize our functional units.
 
   \section{Experimentation}
+  This section is split into two parts.
+
+  In the first section, I will program specific information to find a set of reasonable variables; for instance, because I know there are very few floating point units I can reduce the number of those to 1 without worrying too much about its implications on the other functional units.
+
+  In the second section, I will use pure parameter search to make sure I'm in a local minimum. By the end of this section, any parameter change should make the energy usage worse.
+
+  \subsection{Informed Parameter Selection}
+
+  \subsubsection{Cache}
+  \subsubsection{L1 Block Size}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/l1bsize_vs_energy.png}
+    \caption{Energy vs Block Size}
+    \label{fig:bsize_vs_energy}
+  \end{figure}
+  As discussed in section \ref{analysis:cache}, the nodes in the splay tree are 32 bytes, so if the cache block size is set to 32 bytes, it won't over or underfetch data when accessing a node. To test this, we vary the cache block size while keeping the total cache size constant. As shown in Figure \ref{fig:bsize_vs_energy}.
+
+
+  This analysis shows when block size reaches 128B, the energy usage falls off a cliff, I assume this is a bug so I will take 32B as my block size.
+
+  \subsubsection{L1 Cache Size}
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/l1csize_vs_energy.png}
+    \caption{Energy vs L1 Size}
+    \label{fig:l1size_vs_energy2}
+  \end{figure}
+
+  With the block size minimized, we should be able to reduce the cache size until we start to see a performance hit. Figure \ref{fig:l1size_vs_energy2} shows we can reduce the cache size from 16k to 1k while still reducing energy. This is likely because the random walk means we get a good temporal locality, so we don't need a large cache.
+
+  With this lower cache size, the optimal block size is still 32B. You might think that 64B would be counterproductive now that we have such a limited cache, but it only uses marginally more energy.
+
+  \subsubsection{Functional Units}
+  The only arithmetic-heavy thing in our program is the random number generation, so we should be able to reduce the number of functional units without affecting performance.
+
+  To test this, I will change the amount of each functional unit individually to see if it makes a difference.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/units_vs_energy.png}
+    \caption{Functional Units vs Energy}
+    \label{fig:units_vs_energy}
+  \end{figure}
+
+  Figure \ref{fig:units_vs_energy} shows the only functional unit that makes any difference is the integer ALU, which is best at 2. This makes sense as the other units are barely used, but the integer ALU is used for random number generation.
 
 \end{multicols}
 
