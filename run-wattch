@@ -8,7 +8,8 @@ NQS=$NINS
 SIZE=$NINS
 DELTA=3
 
-/homes/phjk/simplesim-wattch/sim-outorder $SSFLAGS ./splaytest.ss 3 $NINS $NQS $SIZE $DELTA
+# /homes/phjk/simplesim-wattch/sim-outorder $SSFLAGS ./splaytest.ss 3 $NINS $NQS $SIZE $DELTA
+./sim-outorder $SSFLAGS ./splaytest.ss 3 $NINS $NQS $SIZE $DELTA
 
 # cal120@texel33:SplayTrees$ ./run-wattch
 # sim-outorder: SimpleScalar/PISA Tool Set version 3.0 of August, 2003.

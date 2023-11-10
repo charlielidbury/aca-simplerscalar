@@ -84,27 +84,22 @@
   % \subsection{Program Analysis}
   % In this section, I will discuss the various microarchitecture parameters we can adjust, and how they will likely affect the execution of the given splay tree program.
 
-  % Splaytest inserts many elements into a splay tree, then reads many elements, as a random walk. Because it's a random walk, elements that have previously been accessed are very likely to be accessed again. The design of splay trees means many of these operations will be very fast, as the accessed key will have recently been \textit{splayed} over to the root.
+  % 
 
   % \subsubsection{Cache}
   % \label{analysis:cache}
   % The simulator allows us to adjust everything about the L1 and L2 cache (sets, block size, associativity, replacement strategy), as well as how many levels are unified between instructions and data.
 
-  % Looking at the splay tree code, it looks like each node is a struct with 4 8-byte fields, which probably means a cache block size of 32 bytes is optimal.
+  % 
 
-  % \textbf{Spatial Locality} When the tree is splayed around a key, it does so by editing which nodes are pointing at which nodes; so it doesn't use an array representation/physically relocate the nodes in memory. As a result, although the splaying allows a recently accessed element to be accessed with fewer dereferences, it doesn't make the locality of the nodes any better. This means the over-fetching you get with big cache line sizes won't be useful here. I suspect this will make small cache lines more effective, as they require less energy and we wouldn't benefit from the over-fetching from a larger cache line.
-
-  % \textbf{Temporal Locality} The random walk means recently accessed elements are likely to be accessed again, which correlates directly to temporal locality. This program will likely exhibit good temporal locality.
 
   % Perhaps this will mean we won't need as big a cache, as we will get a large hit rate?
 
-  % \subsubsection{Branch Prediction}
-  % We have control over what type of branch predictor is used and its config, as well as the config of the BTB. This is an integer program with a high branching factor, which will probably make speculative execution and branch prediction less effective than they typically are.
 
   % \subsubsection{Functional Units}
   % We can control how many integer/floating point ALUs/multipliers we have.
 
-  % Hardware dedicated to floating point operations will likely go almost entirely unused and do nothing but waste energy. The rest of the units will be a case of putting in \textit{just} enough to maximize utilization.
+  % 
 
   % \subsubsection{Multiple Instructions/Clock}
   % We can alter how many instructions are decoded/issued/committed per cycle, which will affect the IPC, as well as the pressure placed on the other units. For instance, issuing lots of instructions per cycle means we can better utilize our functional units.
@@ -114,9 +109,20 @@
   \subsection{Informed Optimisation}
 
   \subsubsection{Program Analysis}
+  Splaytest inserts many elements into a splay tree, then reads many elements, as a random walk. Because it's a random walk, elements that have previously been accessed are very likely to be accessed again. The design of splay trees means many of these operations will be very fast, as the accessed key will have recently been \textit{splayed} over to the root.
 
+  \textbf{Cache} Looking at the splay tree code, it looks like each node is a struct with 4 8B fields, which probably means a cache block size of 32B is optimal. Because splay tree nodes don't get re-located upon splaying, there will probably be poor spatial locality, but due to the random walk, there will be good temporal locality. This will mean the overfetching we get from making the block size larger than the node size won't be useful, but making it smaller than 32B will be uneccesary and use more gates.
 
-  \subsection{Informed Parameter Selection}
+  Memory access is free due to SimpleScalar not modelling it's energy usage, so small caches might be prefferable.
+
+  \textbf{Branch Predictability} This is an integer program with a high branching factor, which will probably make speculative execution and branch prediction less effective than they typically are. As a result, using a more complex branch predictor might help more than usual due to a large miss rate.
+
+  \textbf{Functional Units} Hardware dedicated to floating point operations and multiplies/divides will likely go almost entirely unused and do nothing but waste energy. The ALU will likely be used a lot in the random number generation, which looks expensive.
+
+  \textbf{Speculative Execution} Due to the high branching factor, I expect there will be a lot of stalls, resulting in speculating further and further into the future costing a lot of energy.
+
+  \subsubsection{Where Is The Energy Being Used}
+  Anaylsis of \verb|power.c| shows us that \verb|total_power_cycle_cc1| is calculated as a sum of \verb|rename_power_cc1|, \verb|bpred_power_cc1|, \verb|lsq_power_cc1|, \verb|window_power_cc1|, \verb|regfile_power_cc1|, \verb|icache_power_cc1|, \verb|resultbus_power_cc1|, \verb|clock_power_cc1|, \verb|alu_power_cc1|, \verb|dcache_power_cc1|, and \verb|dcache2_power_cc1|; which does not include \verb|fetch_stage_power_cc1|, \verb|dispatch_stage_power_cc1|, or \verb|issue_stage_power_cc1|. Figure \ref how each of those components contributes to the total:
 
   \subsubsection{Cache}
   \subsubsection{L1 Block Size}
@@ -126,8 +132,6 @@
     \caption{Energy vs Block Size}
     \label{fig:bsize_vs_energy}
   \end{figure}
-  As discussed in section \ref{analysis:cache}, the nodes in the splay tree are 32 bytes, so if the cache block size is set to 32 bytes, it won't over or underfetch data when accessing a node. To test this, we vary the cache block size while keeping the total cache size constant. As shown in Figure \ref{fig:bsize_vs_energy}.
-
 
   This analysis shows when block size reaches 128B, the energy usage falls off a cliff, I assume this is a bug so I will take 32B as my block size.
 

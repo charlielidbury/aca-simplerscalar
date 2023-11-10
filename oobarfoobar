@@ -1,0 +1,21 @@
+# rename_power_cc1       7164214.3304 # total power usage of rename unit_cc1
+# bpred_power_cc1        29028038.8740 # total power usage of bpred unit_cc1
+# lsq_power_cc1          5461620.3306 # total power usage of lsq_cc1
+# window_power_cc1       43918386.2615 # total power usage of instruction window_cc1
+# regfile_power_cc1      57496092.3990 # total power usage of arch. regfile_cc1
+# icache_power_cc1       50999475.2832 # total power usage of icache_cc1
+# resultbus_power_cc1    41141733.1021 # total power usage of resultbus_cc1
+# clock_power_cc1        240240559.0816 # total power usage of clock_cc1
+# alu_power_cc1          78526615.5640 # total power usage of alu_cc1
+# dcache_power_cc1       63185810.9694 # total power usage of dcache_cc1
+# dcache2_power_cc1        25835.0716 # total power usage of dcache2_cc1
+
+# fetch_stage_power_cc1  80027514.1572 # total power usage of fetch stage_cc1
+# dispatch_stage_power_cc1 7164214.3304 # total power usage of dispatch stage_cc1
+# issue_stage_power_cc1  232260001.2992 # total power usage of issue stage_cc1
+
+# total_power_cycle_cc1  617188381.2675 # total power per cycle_cc1
+
+\verb|rename_power_cc1|, \verb|bpred_power_cc1|, \verb|lsq_power_cc1|, \verb|window_power_cc1|, \verb|regfile_power_cc1|, \verb|icache_power_cc1|, \verb|resultbus_power_cc1|, \verb|clock_power_cc1|, \verb|alu_power_cc1|, \verb|dcache_power_cc1|, and dcache2_power_cc1
+
+\verb|fetch_stage_power_cc1|, \verb|dispatch_stage_power_cc1|, or \verb|issue_stage_power_cc1|
