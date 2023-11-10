@@ -68,7 +68,7 @@
   At the default parameters (RUU=16, LSQ=8) the LSQ seems to be the bottleneck because increasing the RUU past its default value of 16 doesn't increase performance. This is likely because the program has a lot of loads and stores, creating lots of entries in the LSQ.
 
   \subsection{Race-to-Finish Doesn't Always Win}
-  As shown in Figure \ref{fig:energy_vs_ruu_lsq}, the RUU/LSQ configuration with the lowest energy usage in RUU=16, LSQ=16, Figure \ref{fig:ruu_or_lsq_bottleneck} shows it is \textit{at least} RUU=128, LSQ=64. Although there are diminishing returns, it looks like increasing the RUU and LSQ size always results in faster runtime.
+  As shown in Figure \ref{fig:energy_vs_ruu_lsq}, the RUU/LSQ configuration with the lowest energy usage in RUU=16, LSQ=16, Figure \ref{fig:ruu_or_lsq_bottleneck} shows the optimal configuration for instructions per clock it \textit{at least} RUU=128, LSQ=64. Although there are diminishing returns, it looks like increasing the RUU and LSQ size always results in faster runtime.
 
   \section{Minimising Total Energy}
   \subsection{Methodology}
@@ -107,13 +107,12 @@
   %% BEFORE %%
 
   \subsection{Informed Optimisation}
-
   \subsubsection{Program Analysis}
   Splaytest inserts many elements into a splay tree, then reads many elements, as a random walk. Because it's a random walk, elements that have previously been accessed are very likely to be accessed again. The design of splay trees means many of these operations will be very fast, as the accessed key will have recently been \textit{splayed} over to the root.
 
-  \textbf{Cache} Looking at the splay tree code, it looks like each node is a struct with 4 8B fields, which probably means a cache block size of 32B is optimal. Because splay tree nodes don't get re-located upon splaying, there will probably be poor spatial locality, but due to the random walk, there will be good temporal locality. This will mean the overfetching we get from making the block size larger than the node size won't be useful, but making it smaller than 32B will be uneccesary and use more gates.
+  \textbf{Cache} Looking at the splay tree code, it looks like each node is a struct with 4 8B fields, which probably means a cache block size of 32B is optimal. Because splay tree nodes don't get re-located upon splaying, there will probably be poor spatial locality, but due to the random walk, there will be good temporal locality. This will mean the overfetching we get from making the block size larger than the node size won't be useful, but making it smaller than 32B will be unnecessary and use more gates.
 
-  Memory access is free due to SimpleScalar not modelling it's energy usage, so small caches might be prefferable.
+  Memory access is free due to SimpleScalar not modeling its energy usage, so small caches might be preferable.
 
   \textbf{Branch Predictability} This is an integer program with a high branching factor, which will probably make speculative execution and branch prediction less effective than they typically are. As a result, using a more complex branch predictor might help more than usual due to a large miss rate.
 
@@ -122,38 +121,23 @@
   \textbf{Speculative Execution} Due to the high branching factor, I expect there will be a lot of stalls, resulting in speculating further and further into the future costing a lot of energy.
 
   \subsubsection{Where Is The Energy Being Used}
-  Anaylsis of \verb|power.c| shows us that \verb|total_power_cycle_cc1| is calculated as a sum of \verb|rename_power_cc1|, \verb|bpred_power_cc1|, \verb|lsq_power_cc1|, \verb|window_power_cc1|, \verb|regfile_power_cc1|, \verb|icache_power_cc1|, \verb|resultbus_power_cc1|, \verb|clock_power_cc1|, \verb|alu_power_cc1|, \verb|dcache_power_cc1|, and \verb|dcache2_power_cc1|; which does not include \verb|fetch_stage_power_cc1|, \verb|dispatch_stage_power_cc1|, or \verb|issue_stage_power_cc1|. Figure \ref how each of those components contributes to the total:
-
-  \subsubsection{Cache}
-  \subsubsection{L1 Block Size}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{./assets/l1bsize_vs_energy.png}
-    \caption{Energy vs Block Size}
-    \label{fig:bsize_vs_energy}
-  \end{figure}
-
-  This analysis shows when block size reaches 128B, the energy usage falls off a cliff, I assume this is a bug so I will take 32B as my block size.
-
-  \subsubsection{L1 Cache Size}
+  Analysis of \verb|power.c| shows us that \verb|total_power_cycle_cc1| is calculated as a sum of \verb|rename_power_cc1|, \verb|bpred_power_cc1|, \verb|lsq_power_cc1|, \verb|window_power_cc1|, \verb|regfile_power_cc1|, \verb|icache_power_cc1|, \verb|resultbus_power_cc1|, \verb|clock_power_cc1|, \verb|alu_power_cc1|, \verb|dcache_power_cc1|, and \verb|dcache2_power_cc1|; which does not include \verb|fetch_stage_power_cc1|, \verb|dispatch_stage_power_cc1|, or \verb|issue_stage_power_cc1|. Figure \ref{fig:energy_breakdown} shows how each of those components contributes to the total energy usage:
 
   \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{./assets/l1csize_vs_energy.png}
-    \caption{Energy vs L1 Size}
-    \label{fig:l1size_vs_energy2}
+    \includegraphics[width=\linewidth]{./assets/energy_breakdown.png}
+    \caption{Energy Usage By Component}
+    \label{fig:energy_breakdown}
   \end{figure}
 
-  With the block size minimized, we should be able to reduce the cache size until we start to see a performance hit. Figure \ref{fig:l1size_vs_energy2} shows we can reduce the cache size from 16k to 1k while still reducing energy. This is likely because the random walk means we get a good temporal locality, so we don't need a large cache.
+  The following sections will go through the various components of the energy consumption, and attempt to optimize them.
 
-  With this lower cache size, the optimal block size is still 32B. You might think that 64B would be counterproductive now that we have such a limited cache, but it only uses marginally more energy.
+  \subsubsection{Clock Power}
+  I'm not aware of any parameters we have which directly reduce the overall clock power. Other changes may increase our IPC and therefore reduce the number of cycles, which will be caught by optimising individual components like the functional units or caches.
 
-  \subsubsection{Functional Units}
-  The only arithmetic-heavy thing in our program is the random number generation, so we should be able to reduce the number of functional units without affecting performance.
+  \subsubsection{ALU Power}
+  The second largest component of energy usage is the ALU, which might be quite a hard one to reduce because the instructions we need to execute are constant, however, we can try changing the number of ALUs we have and see if that makes a difference. While I'm here I will also try changing the number of multipliers and floating point units.\begin{figure}[H]
 
-  To test this, I will change the amount of each functional unit individually to see if it makes a difference.
-
-  \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{./assets/units_vs_energy.png}
     \caption{Functional Units vs Energy}
@@ -161,6 +145,74 @@
   \end{figure}
 
   Figure \ref{fig:units_vs_energy} shows the only functional unit that makes any difference is the integer ALU, which is best at 2. This makes sense as the other units are barely used, but the integer ALU is used for random number generation.
+
+  \optimisation{reduce_ialu}
+
+  I might have expected having unnecessary functional units to increase energy usage, but it seems like SimplerScalar has some mechanism to prevent unused functional units from using energy.
+
+  \subsubsection{L1 Data Cache}
+  To optimize L1 cache, I do a 2-way search between cache size and block size.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/l1_vs_energy.png}
+    \caption{Block Size \& Cache Size vs Energy}
+    \label{fig:l1_vs_energy}
+  \end{figure}
+
+  Figure \ref{fig:l1_vs_energy} tells us the optimal cache is 512B large with 16B blocks. I suspected having a small cache would be better due to the temporal locality of splay trees (512B is a 32-fold reduction!) but I don't know why a 16B block performs better than a 32B one.
+
+  \optimisation{dl1_cache}
+
+  \subsubsection{L2 (Unified) Cache}
+  In SuperScalar, L2 cache seems extremely cheap, so we can fit an enormous amount of the splay tree in it, and prevent the CPU from ever having to go to main memory. To make it prefetch as much as possible, we use a huge block size.
+
+  Figure \ref{fig:l2_vs_energy} shows the optimal for this is having 64KiB of L2 cache with 16KiB blocks.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/l2_vs_energy.png}
+    \caption{Energy vs L2 Cache}
+    \label{fig:l2_vs_energy}
+  \end{figure}
+
+  \subsubsection{Branch Predictor}
+  Branch prediction will be important due to the high branching factor of the splay tree program. Trying each predictor individually shows the combined predictor is the best, and Figure \ref{fig:meta_table_vs_energy} shows the optimal meta table size is 16B.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/meta_table_vs_energy.png}
+    \caption{Meta Table Size vs Energy}
+    \label{fig:meta_table_vs_energy}
+  \end{figure}
+
+  \optimisation{bpred}
+
+  The BTB size can be drastically reduced: as shown in Figure \ref{fig:btb_vs_energy}, the optimal size is 64B with an associativity of 4.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/btb_vs_energy.png}
+    \caption{BTB vs Energy}
+    \label{fig:btb_vs_energy}
+  \end{figure}
+
+  \optimisation{btb}
+
+  \subsubsection{Issue/Decode/Commit Width}
+  While not explicitly an energy-consuming stage, everything is affected by the issue/decode/
+  commit width, so I will try to optimize it here. We alter the width of each of these stages individually and see how it affects energy usage.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/width_vs_energy.png}
+    \caption{Stage Width vs Energy}
+    \label{fig:width_vs_energy}
+  \end{figure}
+
+  Figure \ref{fig:width_vs_energy} shows the only improvement from the defaults are setting the issue width to 2. This might help because the high branching factor is causing a lot of pipeline stalls. This makes a huge difference.
+
+  \optimisation{width}
 
 \end{multicols}
 
