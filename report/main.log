@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.6.1)  10 NOV 2023 17:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.6.1)  10 NOV 2023 18:59
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/homes/cal120/Documents/repos/aca-simplerscalar/report/main.tex
-(/homes/cal120/Documents/repos/aca-simplerscalar/report/main.tex
+**/homes/cal120/Documents/repos/aca-simplescalar-clone/report/main.tex
+(/homes/cal120/Documents/repos/aca-simplescalar-clone/report/main.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-01-21> (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
@@ -357,15 +357,15 @@ LaTeX Font Info:    ... okay on input line 14.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
-* h-part:(L,W,R)=(45.80893pt, 505.89pt, 45.80894pt)
-* v-part:(T,H,B)=(48.93872pt, 722.7pt, 73.40813pt)
+* h-part:(L,W,R)=(27.74144pt, 542.025pt, 27.74144pt)
+* v-part:(T,H,B)=(34.48474pt, 758.83499pt, 51.72711pt)
 * \paperwidth=597.50787pt
 * \paperheight=845.04684pt
-* \textwidth=505.89pt
-* \textheight=722.7pt
-* \oddsidemargin=-26.46106pt
-* \evensidemargin=-26.46106pt
-* \topmargin=-60.33127pt
+* \textwidth=542.025pt
+* \textheight=758.83499pt
+* \oddsidemargin=-44.52855pt
+* \evensidemargin=-44.52855pt
+* \topmargin=-74.78525pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -412,97 +412,104 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 File: ./assets/ipc_vs_ruu_size.png Graphic file (type png)
 <use ./assets/ipc_vs_ruu_size.png>
 Package pdftex.def Info: ./assets/ipc_vs_ruu_size.png  used on input line 34.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
 <./assets/energy_vs_ruu_and_lsq_size.png, id=6, 462.528pt x 346.896pt>
 File: ./assets/energy_vs_ruu_and_lsq_size.png Graphic file (type png)
 <use ./assets/energy_vs_ruu_and_lsq_size.png>
 Package pdftex.def Info: ./assets/energy_vs_ruu_and_lsq_size.png  used on input line 45.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
 <./assets/ruu_and_lsq_vs_sim_time.png, id=7, 462.528pt x 346.896pt>
 File: ./assets/ruu_and_lsq_vs_sim_time.png Graphic file (type png)
 <use ./assets/ruu_and_lsq_vs_sim_time.png>
 Package pdftex.def Info: ./assets/ruu_and_lsq_vs_sim_time.png  used on input line 61.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./assets/ipc_vs_ruu_size.png> <./assets/energy_vs_ruu_and_lsq_size.png>]
-Overfull \hbox (10.44278pt too wide) in paragraph at lines 124--125
-\OT1/cmr/m/n/10 Analysis of [][]\OT1/cmtt/m/n/10 power.c []\OT1/cmr/m/n/10 shows us that [][]\OT1/cmtt/m/n/10 total_power_cycle_cc1
- []
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 124--125
 []\OT1/cmr/m/n/10 is cal-cu-lated as a sum of [][]\OT1/cmtt/m/n/10 rename_power_cc1[]\OT1/cmr/m/n/10 ,
  []
 
 
-Overfull \hbox (38.27487pt too wide) in paragraph at lines 124--125
+Underfull \hbox (badness 10000) in paragraph at lines 124--125
+[][]\OT1/cmtt/m/n/10 bpred_power_cc1[]\OT1/cmr/m/n/10 , [][]\OT1/cmtt/m/n/10 lsq_power_cc1[]\OT1/cmr/m/n/10 , [][]\OT1/cmtt/m/n/10 window_power_cc1[]\OT1/cmr/m/n/10 ,
+ []
+
+
+Overfull \hbox (20.20737pt too wide) in paragraph at lines 124--125
 [][]\OT1/cmtt/m/n/10 regfile_power_cc1[]\OT1/cmr/m/n/10 , [][]\OT1/cmtt/m/n/10 icache_power_cc1[]\OT1/cmr/m/n/10 , [][]\OT1/cmtt/m/n/10 resultbus_power_cc1[]\OT1/cmr/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 124--125
+[][]\OT1/cmtt/m/n/10 clock_power_cc1[]\OT1/cmr/m/n/10 , [][]\OT1/cmtt/m/n/10 alu_power_cc1[]\OT1/cmr/m/n/10 , [][]\OT1/cmtt/m/n/10 dcache_power_cc1[]\OT1/cmr/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 124--125
+\OT1/cmr/m/n/10 and [][]\OT1/cmtt/m/n/10 dcache2_power_cc1[]\OT1/cmr/m/n/10 ; which does not in-clude
  []
 
 <./assets/energy_breakdown.png, id=19, 462.528pt x 346.896pt>
 File: ./assets/energy_breakdown.png Graphic file (type png)
 <use ./assets/energy_breakdown.png>
 Package pdftex.def Info: ./assets/energy_breakdown.png  used on input line 128.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
-[2 <./assets/ruu_and_lsq_vs_sim_time.png>]
-<./assets/units_vs_energy.png, id=27, 462.528pt x 346.896pt>
-File: ./assets/units_vs_energy.png Graphic file (type png)
-<use ./assets/units_vs_energy.png>
-Package pdftex.def Info: ./assets/units_vs_energy.png  used on input line 142.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
- (./assets/optimisations/reduce_ialu.tex
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
+[2 <./assets/ruu_and_lsq_vs_sim_time.png> <./assets/energy_breakdown.png>] (./assets/optimisations/reduce_ialu.tex
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 9.
+(Font)              <7> on input line 7.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 9.
+(Font)              <5> on input line 7.
 )
 <./assets/l1_vs_energy.png, id=28, 462.528pt x 346.896pt>
 File: ./assets/l1_vs_energy.png Graphic file (type png)
 <use ./assets/l1_vs_energy.png>
-Package pdftex.def Info: ./assets/l1_vs_energy.png  used on input line 158.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
+Package pdftex.def Info: ./assets/l1_vs_energy.png  used on input line 161.
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
  (./assets/optimisations/dl1_cache.tex)
 <./assets/l2_vs_energy.png, id=29, 462.528pt x 346.896pt>
 File: ./assets/l2_vs_energy.png Graphic file (type png)
 <use ./assets/l2_vs_energy.png>
-Package pdftex.def Info: ./assets/l2_vs_energy.png  used on input line 174.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
- [3 <./assets/energy_breakdown.png> <./assets/units_vs_energy.png> <./assets/l1_vs_energy.png>]
-<./assets/meta_table_vs_energy.png, id=37, 462.528pt x 346.896pt>
-File: ./assets/meta_table_vs_energy.png Graphic file (type png)
-<use ./assets/meta_table_vs_energy.png>
-Package pdftex.def Info: ./assets/meta_table_vs_energy.png  used on input line 184.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
- (./assets/optimisations/bpred.tex)
-<./assets/btb_vs_energy.png, id=38, 462.528pt x 346.896pt>
+Package pdftex.def Info: ./assets/l2_vs_energy.png  used on input line 179.
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
+ (./assets/optimisations/l2_cache.tex) (./assets/optimisations/il1_cache.tex) (./assets/optimisations/bpred.tex)
+<./assets/btb_vs_energy.png, id=30, 462.528pt x 346.896pt>
 File: ./assets/btb_vs_energy.png Graphic file (type png)
 <use ./assets/btb_vs_energy.png>
-Package pdftex.def Info: ./assets/btb_vs_energy.png  used on input line 195.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
- (./assets/optimisations/btb.tex)
-<./assets/width_vs_energy.png, id=39, 462.528pt x 346.896pt>
+Package pdftex.def Info: ./assets/btb_vs_energy.png  used on input line 199.
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
+ [3 <./assets/l1_vs_energy.png> <./assets/l2_vs_energy.png>] (./assets/optimisations/btb.tex)
+<./assets/width_vs_energy.png, id=37, 462.528pt x 346.896pt>
 File: ./assets/width_vs_energy.png Graphic file (type png)
 <use ./assets/width_vs_energy.png>
-Package pdftex.def Info: ./assets/width_vs_energy.png  used on input line 208.
-(pdftex.def)             Requested size: 247.94499pt x 185.9607pt.
+Package pdftex.def Info: ./assets/width_vs_energy.png  used on input line 212.
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
  (./assets/optimisations/width.tex)
-Overfull \vbox (12.89955pt too high) has occurred while \output is active []
-
- [4 <./assets/l2_vs_energy.png> <./assets/meta_table_vs_energy.png> <./assets/btb_vs_energy.png> <./assets/width_vs_energy.png>] [5] (./main.aux) ) 
+<./assets/energy_vs_ruu_and_lsq_size2.png, id=38, 462.528pt x 346.896pt>
+File: ./assets/energy_vs_ruu_and_lsq_size2.png Graphic file (type png)
+<use ./assets/energy_vs_ruu_and_lsq_size2.png>
+Package pdftex.def Info: ./assets/energy_vs_ruu_and_lsq_size2.png  used on input line 226.
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
+ (./assets/optimisations/ruu_lsq_iter.tex)
+<./assets/parameter_effectiveness.png, id=39, 462.528pt x 346.896pt>
+File: ./assets/parameter_effectiveness.png Graphic file (type png)
+<use ./assets/parameter_effectiveness.png>
+Package pdftex.def Info: ./assets/parameter_effectiveness.png  used on input line 240.
+(pdftex.def)             Requested size: 266.0125pt x 199.51657pt.
+ [4 <./assets/btb_vs_energy.png> <./assets/width_vs_energy.png> <./assets/energy_vs_ruu_and_lsq_size2.png> <./assets/parameter_effectiveness.png>] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 12439 strings out of 479560
- 255746 string characters out of 5882913
- 539119 words of memory out of 5000000
- 30212 multiletter control sequences out of 15000+600000
+ 12452 strings out of 479560
+ 256310 string characters out of 5882913
+ 540149 words of memory out of 5000000
+ 30216 multiletter control sequences out of 15000+600000
  474341 words of font info for 45 fonts, out of 8000000 for 9000
  497 hyphenation exceptions out of 8191
- 83i,7n,89p,694b,602s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 83i,6n,89p,699b,597s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on main.pdf (5 pages, 423347 bytes).
+Output written on main.pdf (4 pages, 411756 bytes).
 PDF statistics:
- 84 PDF objects out of 1000 (max. 8388607)
- 40 compressed objects within 1 object stream
+ 81 PDF objects out of 1000 (max. 8388607)
+ 38 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  63 words of extra memory for PDF output out of 10000 (max. 10000000)
 

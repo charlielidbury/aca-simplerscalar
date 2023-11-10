@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage[a4paper, total={7in, 10in}]{geometry}
+\usepackage[a4paper, total={7.5in, 10.5in}]{geometry}
 \usepackage{multicol}
 \usepackage{graphicx}
 \usepackage{float}
@@ -136,15 +136,18 @@
   I'm not aware of any parameters we have which directly reduce the overall clock power. Other changes may increase our IPC and therefore reduce the number of cycles, which will be caught by optimising individual components like the functional units or caches.
 
   \subsubsection{ALU Power}
-  The second largest component of energy usage is the ALU, which might be quite a hard one to reduce because the instructions we need to execute are constant, however, we can try changing the number of ALUs we have and see if that makes a difference. While I'm here I will also try changing the number of multipliers and floating point units.\begin{figure}[H]
+  The second largest component of energy usage is the ALU, which might be quite a hard one to reduce because the instructions we need to execute are constant, however, we can try changing the number of ALUs we have and see if that makes a difference. While I'm here I will also try changing the number of multipliers and floating point units.
 
-    \centering
-    \includegraphics[width=\linewidth]{./assets/units_vs_energy.png}
-    \caption{Functional Units vs Energy}
-    \label{fig:units_vs_energy}
-  \end{figure}
+  Doing a parameter search on the number of functional units reveals the only unit that makes any difference is the integer ALU, which is optimal at 2 or 3. This makes sense as the other units are barely used, but the integer ALU is used for random number generation.
 
-  Figure \ref{fig:units_vs_energy} shows the only functional unit that makes any difference is the integer ALU, which is best at 2. This makes sense as the other units are barely used, but the integer ALU is used for random number generation.
+  % \begin{figure}[H]
+  %   \centering
+  %   \includegraphics[width=\linewidth]{./assets/units_vs_energy.png}
+  %   \caption{Functional Units vs Energy}
+  %   \label{fig:units_vs_energy}
+  % \end{figure}
+
+  % Figure \ref{fig:units_vs_energy} shows the only functional unit that makes any difference is the integer ALU, which is best at 2. This makes sense as the other units are barely used, but the integer ALU is used for random number generation.
 
   \optimisation{reduce_ialu}
 
@@ -162,6 +165,8 @@
 
   Figure \ref{fig:l1_vs_energy} tells us the optimal cache is 512B large with 16B blocks. I suspected having a small cache would be better due to the temporal locality of splay trees (512B is a 32-fold reduction!) but I don't know why a 16B block performs better than a 32B one.
 
+  Interestingly enough, reducing the cache size does not reduce the requirement for cache, likely because how much cache you need is a function of how far you are likely to step in the random walk, which is controlled by delta and the random number generator, not tree size.
+
   \optimisation{dl1_cache}
 
   \subsubsection{L2 (Unified) Cache}
@@ -176,15 +181,14 @@
     \label{fig:l2_vs_energy}
   \end{figure}
 
-  \subsubsection{Branch Predictor}
-  Branch prediction will be important due to the high branching factor of the splay tree program. Trying each predictor individually shows the combined predictor is the best, and Figure \ref{fig:meta_table_vs_energy} shows the optimal meta table size is 16B.
+  \optimisation{l2_cache}
 
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{./assets/meta_table_vs_energy.png}
-    \caption{Meta Table Size vs Energy}
-    \label{fig:meta_table_vs_energy}
-  \end{figure}
+  The L1 cache has been drastically shrunk, resulting in nice energy savings.
+
+  \optimisation{il1_cache}
+
+  \subsubsection{Branch Predictor}
+  Branch prediction will be important due to the high branching factor of the splay tree program. Trying each predictor individually shows the combined predictor is the best. The optimal meta table size is 16B. Graph omitted for brevity.
 
   \optimisation{bpred}
 
@@ -210,9 +214,64 @@
     \label{fig:width_vs_energy}
   \end{figure}
 
-  Figure \ref{fig:width_vs_energy} shows the only improvement from the defaults are setting the issue width to 2. This might help because the high branching factor is causing a lot of pipeline stalls. This makes a huge difference.
+  Figure \ref{fig:width_vs_energy} shows the only improvement from the defaults is setting the issue width to 2. This might help because the high branching factor is causing a lot of pipeline stalls. This makes a huge difference.
 
   \optimisation{width}
+
+  \subsection{Systematic Optimisation}
+  To make sure I'm at a local minimum, I have re-run every experiment in the report so far, starting from the optimal parameters found in the previous section. Now that everything has shrunk, the optimal parameters for the RUU and LSQ are 8 and 4 respectively, as shown by the new version of Figure \ref{fig:energy_vs_ruu_lsq2}.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/energy_vs_ruu_and_lsq_size2.png}
+    \caption{Energy vs RUU Size/LSQ Size}
+    \label{fig:energy_vs_ruu_lsq2}
+  \end{figure}
+
+  \optimisation{ruu_lsq_iter}
+
+  Running all experiments again, no parameters can be improved, therefore we are at a local minimum.
+
+  \subsection{Energy Optimisation Summary}
+  After all is said and done, we are down to a very competitive $0.291J$ which is about half the original energy usage. By removing our optimizations one at a time and measuring energy usage, we can see which were most effective.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./assets/parameter_effectiveness.png}
+    \caption{Energy Usage Increase Caused By Removing Optimisations}
+    \label{fig:parameter_effectiveness}
+  \end{figure}
+
+  Figure \ref{fig:parameter_effectiveness} shows the largest improvement by far came from adjusting the caches, of our optimizations 3 are cache-related, including the most effective optimization. They alone account for over half the energy reduction. Final energy = $0.291J$.
+
+  % \begin{tcolorbox}[width=\linewidth, colback=white!95!black, colframe=white!95!black]
+  %   \begin{center}\textbf{All Optimizations}\end{center}
+
+  %   \tcblower
+
+  %   Params \hfill \verb|-res:ialu 2|
+
+  %   \hfill \verb|-cache:dl1 dl1:8:16:4:l|
+
+  %   \hfill \verb|-cache:dl2 ul2:1:16384:2:l|
+
+  %   \hfill \verb|-cache:il1 il1:16:64:4:l|
+
+  %   \hfill \verb|-bpred comb|
+
+  %   \hfill \verb|-bpred:comb 16|
+
+  %   \hfill \verb|-bpred:btb 16 4|
+
+  %   \hfill \verb|-issue:width 2|
+
+  %   \hfill \verb|-ruu:size 8|
+
+  %   \hfill \verb|-lsq:size 4|
+
+  %   Energy \hfill \st{$0.617J$} $0.291J$
+
+  % \end{tcolorbox}
 
 \end{multicols}
 

@@ -3,7 +3,7 @@
 # This shell script runs the test program on a small problem size
 # - small enough for you to run a lot of experiments
 
-NINS=1000
+NINS=100000
 NQS=$NINS
 SIZE=$NINS
 DELTA=3
