@@ -1,8 +1,15 @@
 \documentclass{article}
-\usepackage[a4paper, total={6in, 10in}]{geometry}
+\usepackage[a4paper, total={7in, 10in}]{geometry}
 \usepackage{multicol}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{tcolorbox}
+\usepackage{verbatim}
+\usepackage{soul}
+
+\newcommand{\optimisation}[1]{
+  \input{./assets/optimisations/#1.tex}
+}
 
 \begin{document}
 
@@ -13,10 +20,14 @@
 \begin{multicols}{2}
 
   \section{Intro}
-  There is a known set of controls we have over the microarchitecture of the SimpleScalar CPU, and we have the source code of the program being run.
+  This report aims to roughly follow the structure of the specification, starting with the fixed exploration and then finishing with the energy optimization challenge. Apologies for the US English throughout, I can't figure out how to change my spell-check.
 
   \section{Studying Microarchitectural Effects}
   At the start of the specification, there are a few direct questions, this section answers those.
+
+  \subsection{Parameters Interact (RUU vs LSQ vs Energy/IPC)}
+
+  The more RUU you give the CPU, the more instructions per clock you get, likely because it can better utilize functional units, as shown in Figure \ref{fig:ipc_energy_vs_ruu}.
 
   \begin{figure}[H]
     \centering
@@ -25,12 +36,8 @@
     \label{fig:ipc_energy_vs_ruu}
   \end{figure}
 
-  \subsection{Varying RUU}
-  The more RUU you give the CPU, the more instructions per clock you get, likely because it can better utilize functional units, as shown in Figure \ref{fig:ipc_energy_vs_ruu}
-
   However, as shown by the red line, this does not translate to better energy efficiency forever. This is likely because the extra instructions per clock are not worth the extra energy cost of the larger RUU.
 
-  \subsection{Varying both RUU and LSQ}
   If we vary both the RUU size and LSQ size at the same time, we can see that if either gets too small, the other becomes the bottleneck.
 
   \begin{figure}[H]
@@ -63,40 +70,51 @@
   \subsection{Race-to-Finish Doesn't Always Win}
   As shown in Figure \ref{fig:energy_vs_ruu_lsq}, the RUU/LSQ configuration with the lowest energy usage in RUU=16, LSQ=16, Figure \ref{fig:ruu_or_lsq_bottleneck} shows it is \textit{at least} RUU=128, LSQ=64. Although there are diminishing returns, it looks like increasing the RUU and LSQ size always results in faster runtime.
 
-  \section{Program Analysis}
-  In this section, I will discuss the various microarchitecture parameters we can adjust, and how they will likely affect the execution of the given splay tree program.
+  \section{Minimising Total Energy}
+  \subsection{Methodology}
+  % Get program-specific knowledge
+  % Use that to come up with reasonable parameters
+  % Use systematic search to make sure we're in a local minimum
+  My search for the optimal parameters will occur in two main stages:
 
-  Splaytest inserts many elements into a splay tree, then reads many elements, as a random walk. Because it's a random walk, elements that have previously been accessed are very likely to be accessed again. The design of splay trees means many of these operations will be very fast, as the accessed key will have recently been \textit{splayed} over to the root.
+  \textbf{Informed Optimisation} In the first section, I will reason about the program to find a set of reasonable variables; for instance, because I know there are very few floating point operations in the C source code, I can reduce the number of those to 1 without worrying too much about its implications on the other functional units.
 
-  \subsection{Cache}
-  \label{analysis:cache}
-  The simulator allows us to adjust everything about the L1 and L2 cache (sets, block size, associativity, replacement strategy), as well as how many levels are unified between instructions and data.
+  \textbf{Systematic Optimisation} In this section, I will use pure statistical search to make sure I'm in a local minimum. After this, there could still be other places in the parameter space with better performance, but I will at least know that any valid change to any parameter will result in performance degradation.
 
-  Looking at the splay tree code, it looks like each node is a struct with 4 8-byte fields, which probably means a cache block size of 32 bytes is optimal.
+  % \subsection{Program Analysis}
+  % In this section, I will discuss the various microarchitecture parameters we can adjust, and how they will likely affect the execution of the given splay tree program.
 
-  \textbf{Spatial Locality} When the tree is splayed around a key, it does so by editing which nodes are pointing at which nodes; so it doesn't use an array representation/physically relocate the nodes in memory. As a result, although the splaying allows a recently accessed element to be accessed with fewer dereferences, it doesn't make the locality of the nodes any better. This means the over-fetching you get with big cache line sizes won't be useful here. I suspect this will make small cache lines more effective, as they require less energy and we wouldn't benefit from the over-fetching from a larger cache line.
+  % Splaytest inserts many elements into a splay tree, then reads many elements, as a random walk. Because it's a random walk, elements that have previously been accessed are very likely to be accessed again. The design of splay trees means many of these operations will be very fast, as the accessed key will have recently been \textit{splayed} over to the root.
 
-  \textbf{Temporal Locality} The random walk means recently accessed elements are likely to be accessed again, which correlates directly to temporal locality. This program will likely exhibit good temporal locality.
+  % \subsubsection{Cache}
+  % \label{analysis:cache}
+  % The simulator allows us to adjust everything about the L1 and L2 cache (sets, block size, associativity, replacement strategy), as well as how many levels are unified between instructions and data.
 
-  Perhaps this will mean we won't need as big a cache, as we will get a large hit rate?
+  % Looking at the splay tree code, it looks like each node is a struct with 4 8-byte fields, which probably means a cache block size of 32 bytes is optimal.
 
-  \subsection{Branch Prediction}
-  We have control over what type of branch predictor is used and its config, as well as the config of the BTB. This is an integer program with a high branching factor, which will probably make speculative execution and branch prediction less effective than they typically are.
+  % \textbf{Spatial Locality} When the tree is splayed around a key, it does so by editing which nodes are pointing at which nodes; so it doesn't use an array representation/physically relocate the nodes in memory. As a result, although the splaying allows a recently accessed element to be accessed with fewer dereferences, it doesn't make the locality of the nodes any better. This means the over-fetching you get with big cache line sizes won't be useful here. I suspect this will make small cache lines more effective, as they require less energy and we wouldn't benefit from the over-fetching from a larger cache line.
 
-  \subsection{Functional Units}
-  We can control how many integer/floating point ALUs/multipliers we have.
+  % \textbf{Temporal Locality} The random walk means recently accessed elements are likely to be accessed again, which correlates directly to temporal locality. This program will likely exhibit good temporal locality.
 
-  Hardware dedicated to floating point operations will likely go almost entirely unused and do nothing but waste energy. The rest of the units will be a case of putting in \textit{just} enough to maximize utilization.
+  % Perhaps this will mean we won't need as big a cache, as we will get a large hit rate?
 
-  \subsection{Multiple Instructions/Clock}
-  We can alter how many instructions are decoded/issued/committed per cycle, which will affect the IPC, as well as the pressure placed on the other units. For instance, issuing lots of instructions per cycle means we can better utilize our functional units.
+  % \subsubsection{Branch Prediction}
+  % We have control over what type of branch predictor is used and its config, as well as the config of the BTB. This is an integer program with a high branching factor, which will probably make speculative execution and branch prediction less effective than they typically are.
 
-  \section{Experimentation}
-  This section is split into two parts.
+  % \subsubsection{Functional Units}
+  % We can control how many integer/floating point ALUs/multipliers we have.
 
-  In the first section, I will program specific information to find a set of reasonable variables; for instance, because I know there are very few floating point units I can reduce the number of those to 1 without worrying too much about its implications on the other functional units.
+  % Hardware dedicated to floating point operations will likely go almost entirely unused and do nothing but waste energy. The rest of the units will be a case of putting in \textit{just} enough to maximize utilization.
 
-  In the second section, I will use pure parameter search to make sure I'm in a local minimum. By the end of this section, any parameter change should make the energy usage worse.
+  % \subsubsection{Multiple Instructions/Clock}
+  % We can alter how many instructions are decoded/issued/committed per cycle, which will affect the IPC, as well as the pressure placed on the other units. For instance, issuing lots of instructions per cycle means we can better utilize our functional units.
+
+  %% BEFORE %%
+
+  \subsection{Informed Optimisation}
+
+  \subsubsection{Program Analysis}
+
 
   \subsection{Informed Parameter Selection}
 
